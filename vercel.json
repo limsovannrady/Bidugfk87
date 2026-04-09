@@ -1,7 +1,7 @@
 {
   "version": 2,
   "framework": null,
-  "buildCommand": "pnpm install && pnpm --filter @workspace/bot-dashboard run build && cp -r artifacts/bot-dashboard/dist ./dist",
+  "buildCommand": "pnpm install && pnpm --filter @workspace/bot-dashboard run build",
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
