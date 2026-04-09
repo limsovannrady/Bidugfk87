@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "framework": null,
   "buildCommand": "pnpm install && pnpm --filter @workspace/bot-dashboard run build",
   "outputDirectory": "artifacts/bot-dashboard/dist",
   "rewrites": [
