@@ -1,0 +1,27 @@
+packages:
+  - "artifacts/*"
+
+onlyBuiltDependencies:
+  - esbuild
+
+catalog:
+  "@replit/vite-plugin-cartographer": "^0.5.1"
+  "@replit/vite-plugin-dev-banner": "^0.1.2"
+  "@replit/vite-plugin-runtime-error-modal": "^0.0.6"
+  "@tailwindcss/vite": "^4.1.3"
+  "@tanstack/react-query": "^5.62.16"
+  "@types/node": "^22.13.5"
+  "@types/react": "^19.0.8"
+  "@types/react-dom": "^19.0.3"
+  "@vitejs/plugin-react": "^4.3.4"
+  "class-variance-authority": "^0.7.1"
+  "clsx": "^2.1.1"
+  "framer-motion": "^11.18.2"
+  "lucide-react": "^0.475.0"
+  "react": "^19.0.0"
+  "react-dom": "^19.0.0"
+  "tailwind-merge": "^2.6.0"
+  "tailwindcss": "^4.1.3"
+  "vite": "^6.1.0"
+  "wouter": "^3.3.5"
+  "zod": "^3.24.1"
