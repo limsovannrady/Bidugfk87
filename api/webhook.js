@@ -1,7 +1,31 @@
-export default async function handler(req, res) {
+const https = require("https");
+
+function sendMessage(token, chatId, text) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({ chat_id: chatId, text });
+    const options = {
+      hostname: "api.telegram.org",
+      path: `/bot${token}/sendMessage`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+      },
+    };
+    const req = https.request(options, (res) => {
+      res.on("data", () => {});
+      res.on("end", resolve);
+    });
+    req.on("error", reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+module.exports = async function handler(req, res) {
   if (req.method === "POST") {
     try {
-      const update = req.body;
+      const update = req.body || {};
       const message = update.message || update.edited_message;
       if (message) {
         const user = message.from || {};
@@ -10,11 +34,7 @@ export default async function handler(req, res) {
           const token = process.env.TELEGRAM_BOT_TOKEN;
           const chatId = message.chat.id;
           const firstName = user.first_name || "";
-          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: chatId, text: `សួស្តី ${firstName}!` }),
-          });
+          await sendMessage(token, chatId, `សួស្តី ${firstName}!`);
         }
       }
       res.status(200).json({ ok: true });
@@ -24,4 +44,4 @@ export default async function handler(req, res) {
   } else {
     res.status(200).json({ status: "webhook active" });
   }
-}
+};
