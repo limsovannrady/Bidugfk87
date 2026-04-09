@@ -4,7 +4,6 @@
   "buildCommand": "pnpm install && pnpm --filter @workspace/bot-dashboard run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ],
   "env": {
