@@ -7,7 +7,8 @@ A Telegram Bot with a web dashboard to view and manage users. Built with Python 
 ## Stack
 
 - **Bot**: Python + python-telegram-bot
-- **API**: Python Flask (REST API serving user data)
+- **API (Replit)**: Python Flask on port 5001
+- **API (Vercel)**: Python serverless functions in `api/`
 - **Database**: PostgreSQL (stores bot users)
 - **Dashboard**: React + Vite + Tailwind CSS
 - **Package manager**: pnpm workspace
@@ -15,8 +16,15 @@ A Telegram Bot with a web dashboard to view and manage users. Built with Python 
 ## Project Structure
 
 ```
-├── bot.py                    # Telegram bot (saves users on /start)
-├── api.py                    # Flask REST API for dashboard data
+├── bot.py                    # Telegram bot (polling mode — for Replit)
+├── api.py                    # Flask API (for Replit local dev)
+├── api/                      # Vercel serverless functions
+│   ├── users.py              # GET /api/users
+│   ├── stats.py              # GET /api/stats
+│   ├── webhook.py            # POST /api/webhook (Telegram webhook)
+│   └── requirements.txt      # Python deps for Vercel
+├── setup_webhook.py          # Script to register Telegram webhook
+├── vercel.json               # Vercel deployment config
 ├── artifacts/
 │   └── bot-dashboard/        # React dashboard (Vite)
 │       └── src/
@@ -26,14 +34,14 @@ A Telegram Bot with a web dashboard to view and manage users. Built with Python 
 │               └── Dashboard.tsx
 ├── pnpm-workspace.yaml       # pnpm workspace config
 ├── tsconfig.base.json        # Base TypeScript config
-└── pyproject.toml            # Python dependencies
+└── pyproject.toml            # Python dependencies (Replit)
 ```
 
-## Workflows
+## Workflows (Replit local dev)
 
-- **Telegram Bot**: Runs `python3 bot.py` — polls Telegram, saves new users to PostgreSQL
-- **Flask API**: Runs `python3 api.py` on port 5001 — serves user data via REST API
-- **artifacts/bot-dashboard: web**: React dashboard on port assigned by platform
+- **Telegram Bot**: `python3 bot.py` — polls Telegram, saves new users to PostgreSQL
+- **Flask API**: `python3 api.py` on port 5001 — serves user data via REST API
+- **artifacts/bot-dashboard: web**: React dashboard (dev server)
 
 ## Database
 
@@ -49,11 +57,40 @@ PostgreSQL table `bot_users`:
 
 - `GET /api/users` — list all bot users
 - `GET /api/stats` — `{ total, today }` stats
-- `GET /api/healthz` — health check
+- `POST /api/webhook` — Telegram webhook receiver
 
-## How It Works
+## Deploying to Vercel
 
-1. User sends `/start` to the Telegram bot
-2. Bot saves user info to PostgreSQL
-3. Dashboard fetches from Flask API via Vite proxy (`/api` → localhost:5001)
-4. Dashboard shows user list with search and stats
+### Step 1: Set up a public PostgreSQL database
+
+Use one of: [Neon](https://neon.tech), [Supabase](https://supabase.com), or [Railway](https://railway.app).
+Get your `DATABASE_URL` connection string.
+
+Create the `bot_users` table:
+```sql
+CREATE TABLE IF NOT EXISTS bot_users (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT UNIQUE NOT NULL,
+    username VARCHAR(255),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    joined_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Step 2: Deploy to Vercel
+
+1. Push this repo to GitHub
+2. Import project at [vercel.com/new](https://vercel.com/new)
+3. Add environment variables:
+   - `DATABASE_URL` — your PostgreSQL connection string
+   - `TELEGRAM_BOT_TOKEN` — your bot token
+
+### Step 3: Register Telegram webhook
+
+After deploying, run once:
+```bash
+python3 setup_webhook.py https://your-project.vercel.app
+```
+
+This registers the Vercel URL as your bot's webhook (replaces polling).
