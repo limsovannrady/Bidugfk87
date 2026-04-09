@@ -3,11 +3,6 @@
   "framework": null,
   "buildCommand": "pnpm install && pnpm --filter @workspace/bot-dashboard run build",
   "outputDirectory": "dist",
-  "functions": {
-    "api/webhook.py": {
-      "runtime": "python3.12"
-    }
-  },
   "rewrites": [
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ],
